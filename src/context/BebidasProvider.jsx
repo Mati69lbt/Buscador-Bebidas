@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import PropTypes from "prop-types";
+
 import axios from "axios";
 
 const BebidasContext = createContext();
@@ -12,6 +12,19 @@ const BebidasProvider = ({ children }) => {
   const [bebidaID, setbebidaID] = useState(null);
 
   const [receta, setReceta] = useState({});
+
+  const ramdom = async () => {
+    try {
+      const url = "https://www.thecocktaildb.com/api/json/v1/1/random.php";
+      const { data } = await axios(url);
+
+      setReceta(data.drinks[0]);
+      setBebidas([]);
+      handleModalClick();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     const ObtenerReceta = async () => {
@@ -31,15 +44,20 @@ const BebidasProvider = ({ children }) => {
     ObtenerReceta();
   }, [bebidaID]);
 
-  const ConsultarBebida = async (datos) => {
+  const ConsultarBebida = async (categoria, ingrediente) => {
     try {
-      const url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${datos.nombre}&c=${datos.categoria}`;
+      let url;
+      if (categoria) {
+        url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${categoria}`;
+      } else {
+        url = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${ingrediente}`;
+      }
 
       const { data } = await axios(url);
 
       setBebidas(data.drinks);
     } catch (error) {
-      console.log(error);
+      console.log("Error al realizar la solicitud:", error);
     }
   };
 
@@ -61,15 +79,12 @@ const BebidasProvider = ({ children }) => {
         handleBebidaIdCLick,
         receta,
         setReceta,
+        ramdom,
       }}
     >
       {children}
     </BebidasContext.Provider>
   );
-};
-
-BebidasProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };
 
 export { BebidasProvider };

@@ -21,7 +21,7 @@ const Bebida = ({ bebida }) => {
               handleBebidaIdCLick(bebida.idDrink);
             }}
           >
-            Ver Receta
+            View Recipe
           </Button>
         </Card.Body>
       </Card>
